@@ -2,6 +2,12 @@
 
 Standalone Arduino sketch for an ESP32 + ILI9341 build that renders a Space Invaders-inspired clock face.
 
+## Project Writeup
+
+Full build notes and photos are on Hackster:
+
+- [Retro Arcade Clock on a CYD](https://www.hackster.io/bwente/retro-arcade-clock-on-a-cyd-591fc1)
+
 ## Files
 
 - `Retro_Arcade_Clock/Retro_Arcade_Clock.ino`: main sketch
