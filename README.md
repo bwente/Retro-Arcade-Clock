@@ -12,11 +12,20 @@ Full build notes and photos are on Hackster:
 
 - [Retro Arcade Clock on a CYD](https://www.hackster.io/bwente/retro-arcade-clock-on-a-cyd-591fc1)
 
+## Known Compatible Boards
+
+These ESP32 boards have come up repeatedly as known good fits for this project:
+
+- LOLIN D32 Pro
+- D1 Mini ESP32
+- Mini 32 WROOM
+
 ## Files
 
 - `Retro_Arcade_Clock/Retro_Arcade_Clock.ino`: main sketch
 - `Retro_Arcade_Clock/secrets.example.h`: copy this to `secrets.h` for local Wi-Fi credentials
 - `images/invader-clock-hero.jpg`: optimized hero image featured in this README
+- `LICENSE`: MIT license for the project
 
 ## Dependencies
 
@@ -33,3 +42,7 @@ Full build notes and photos are on Hackster:
 5. Select your ESP32 board and upload.
 
 `Retro_Arcade_Clock/secrets.h` is git-ignored so your real credentials stay local.
+
+## License
+
+Released under the MIT License. See [`LICENSE`](LICENSE).
