@@ -2,6 +2,10 @@
 
 Standalone Arduino sketch for an ESP32 + ILI9341 build that renders a Space Invaders-inspired clock face.
 
+![Retro Arcade Clock hero](images/invader-clock-hero.jpg)
+
+Live build photo of the clock running on the CYD display.
+
 ## Project Writeup
 
 Full build notes and photos are on Hackster:
@@ -12,6 +16,7 @@ Full build notes and photos are on Hackster:
 
 - `Retro_Arcade_Clock/Retro_Arcade_Clock.ino`: main sketch
 - `Retro_Arcade_Clock/secrets.example.h`: copy this to `secrets.h` for local Wi-Fi credentials
+- `images/invader-clock-hero.jpg`: optimized hero image featured in this README
 
 ## Dependencies
 
