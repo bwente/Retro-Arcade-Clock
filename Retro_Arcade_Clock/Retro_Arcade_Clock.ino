@@ -164,6 +164,7 @@ void setDestructiveTarget();
 void handleCannonMovement();
 void drawScore();
 void drawCannon();
+bool cannonNeedsEdgeFallback(int x);
 void drawInvaders();
 void drawScreen();
 void initializeInvaders(int minutesElapsed);
@@ -1079,34 +1080,56 @@ void drawInvaders() {
   }
 }
 
+bool cannonNeedsEdgeFallback(int x) {
+  return x < cannonCanvasPadding ||
+         x > (SCREEN_WIDTH - BASE_WIDTH - cannonCanvasPadding);
+}
+
 void drawCannon() {
-  // Cache the scaled cannon sprite once, with side padding wide enough to
-  // overwrite the previous frame's cannon position as it moves.
-  static GFXcanvas1 canvas(BASE_WIDTH + (2 * cannonCanvasPadding), BASE_HEIGHT);
+  // Cache both the exact sprite and a padded version. The padded bitmap erases
+  // the previous cannon position in a single blit, while the exact-width
+  // version avoids any clipping weirdness when the cannon reaches the edge.
+  static GFXcanvas1 cannonCanvas(BASE_WIDTH, BASE_HEIGHT);
+  static GFXcanvas1 paddedCanvas(BASE_WIDTH + (2 * cannonCanvasPadding), BASE_HEIGHT);
   static bool canvasReady = false;
 
   if (!canvasReady) {
-    canvas.fillScreen(0);
+    cannonCanvas.fillScreen(0);
+    paddedCanvas.fillScreen(0);
     for (int yy = 0; yy < BASE_HEIGHT; yy++) {
       for (int xx = 0; xx < BASE_WIDTH; xx++) {
         if (cannonSprite[(yy * 10) / BASE_HEIGHT][(xx * 10) / BASE_WIDTH]) {
-          canvas.drawPixel(xx + cannonCanvasPadding, yy, 1);
+          cannonCanvas.drawPixel(xx, yy, 1);
+          paddedCanvas.drawPixel(xx + cannonCanvasPadding, yy, 1);
         }
       }
     }
     canvasReady = true;
   }
 
-  tft.drawBitmap(cannonX - cannonCanvasPadding,
-                 SCREEN_HEIGHT - BASE_HEIGHT - 10,
-                 canvas.getBuffer(),
-                 canvas.width(),
-                 canvas.height(),
-                 ILI9341_WHITE,
-                 ILI9341_BLACK);
+  int cannonY = SCREEN_HEIGHT - BASE_HEIGHT - 10;
+  if (cannonNeedsEdgeFallback(cannonX)) {
+    tft.drawBitmap(cannonX,
+                   cannonY,
+                   cannonCanvas.getBuffer(),
+                   cannonCanvas.width(),
+                   cannonCanvas.height(),
+                   ILI9341_WHITE,
+                   ILI9341_BLACK);
+  } else {
+    tft.drawBitmap(cannonX - cannonCanvasPadding,
+                   cannonY,
+                   paddedCanvas.getBuffer(),
+                   paddedCanvas.width(),
+                   paddedCanvas.height(),
+                   ILI9341_WHITE,
+                   ILI9341_BLACK);
+  }
 }
 
 void handleCannonMovement() {
+  int previousCannonX = cannonX;
+
   if (cannonDodging && dodgeTargetX != -1) {
     if (cannonX < dodgeTargetX) cannonX += cannonDodgeSpeed;
     else if (cannonX > dodgeTargetX) cannonX -= cannonDodgeSpeed;
@@ -1135,6 +1158,11 @@ void handleCannonMovement() {
 
     if (cannonX <= 0) cannonDirection = 1;
     if (cannonX >= SCREEN_WIDTH - BASE_WIDTH) cannonDirection = -1;
+  }
+
+  if (cannonNeedsEdgeFallback(previousCannonX) || cannonNeedsEdgeFallback(cannonX)) {
+    tft.fillRect(previousCannonX, SCREEN_HEIGHT - BASE_HEIGHT - 10,
+                 BASE_WIDTH, BASE_HEIGHT, ILI9341_BLACK);
   }
 
   drawCannon();
