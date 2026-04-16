@@ -3,6 +3,7 @@
 #include <Adafruit_ILI9341.h>
 #include <WiFi.h>
 #include <time.h>
+#include "secrets.h"
 
 //----------------------------------------
 // TFT Screen Pins (E32R28T / E32N28T 2.8" ESP32-32E ILI9341 board)
@@ -16,12 +17,6 @@
 #define TFT_MISO  12
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
-
-//----------------------------------------
-// Wi-Fi Credentials
-//----------------------------------------
-const char* ssid     = "SSID";
-const char* password = "PASSWORD";
 
 const char* tzInfo     = "EST5EDT,M3.2.0,M11.1.0";
 const char* ntpServer1 = "pool.ntp.org";
