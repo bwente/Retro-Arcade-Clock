@@ -60,6 +60,7 @@ const int invaderMissMaxX                   = SCREEN_WIDTH - 7;
 const int invaderMissSafetyMargin           = 12;
 const int invaderMissRedirectZone           = 32;
 const int cannonDodgeSpeed                  = 6;
+const int cannonCanvasPadding               = cannonDodgeSpeed;
 
 int  ufoX      = -1;
 int  ufoY      = 64;
@@ -1079,14 +1080,33 @@ void drawInvaders() {
 }
 
 void drawCannon() {
-  drawScaledSprite(cannonX, SCREEN_HEIGHT - BASE_HEIGHT - 10,
-                   BASE_WIDTH, BASE_HEIGHT, ILI9341_WHITE, cannonSprite);
+  // Cache the scaled cannon sprite once, with side padding wide enough to
+  // overwrite the previous frame's cannon position as it moves.
+  static GFXcanvas1 canvas(BASE_WIDTH + (2 * cannonCanvasPadding), BASE_HEIGHT);
+  static bool canvasReady = false;
+
+  if (!canvasReady) {
+    canvas.fillScreen(0);
+    for (int yy = 0; yy < BASE_HEIGHT; yy++) {
+      for (int xx = 0; xx < BASE_WIDTH; xx++) {
+        if (cannonSprite[(yy * 10) / BASE_HEIGHT][(xx * 10) / BASE_WIDTH]) {
+          canvas.drawPixel(xx + cannonCanvasPadding, yy, 1);
+        }
+      }
+    }
+    canvasReady = true;
+  }
+
+  tft.drawBitmap(cannonX - cannonCanvasPadding,
+                 SCREEN_HEIGHT - BASE_HEIGHT - 10,
+                 canvas.getBuffer(),
+                 canvas.width(),
+                 canvas.height(),
+                 ILI9341_WHITE,
+                 ILI9341_BLACK);
 }
 
 void handleCannonMovement() {
-  tft.fillRect(cannonX, SCREEN_HEIGHT - BASE_HEIGHT - 10,
-               BASE_WIDTH, BASE_HEIGHT, ILI9341_BLACK);
-
   if (cannonDodging && dodgeTargetX != -1) {
     if (cannonX < dodgeTargetX) cannonX += cannonDodgeSpeed;
     else if (cannonX > dodgeTargetX) cannonX -= cannonDodgeSpeed;
